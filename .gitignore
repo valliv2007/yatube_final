@@ -5,7 +5,8 @@ __pycache__/
 
 # C extensions
 *.so
-
+static/
+media/
 # Distribution / packaging
 .Python
 build/
@@ -144,9 +145,3 @@ dmypy.json
 .history/
 
 .mypy_cache
-
-# папки со статикой и медиа
-static/
-yatube/posts/static/
-yatube/media/
-

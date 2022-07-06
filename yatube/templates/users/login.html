@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Войти{% endblock %}
+{% block content %}
+{% load user_filters %}
+<div class="row justify-content-center">
+  <div class="col-md-8 p-5">
+    <div class="card">
+      <div class="card-header">
+        Войти на сайт
+      </div>
+      <div class="card-body">
+      {% if form.errors %}
+        {% for field in form %}
+          {% for error in field.errors %}
+          <div class="alert alert-danger">
+            {{ error|escape }}
+          </div>
+          {% endfor %}
+        {% endfor %}
+        {% for error in form.non_field_errors %}
+          <div class="alert alert-danger">
+            {{ error|escape }}
+          </div>
+        {% endfor %}
+      {% endif %}
+        <form method="post"
+          {% if action_url %}
+            action="{% url action_url %}"
+          {% endif %}>
+        {% csrf_token %}
+        {% with button_name='Войти' link='Забыли пароль?' %}
+        {% include 'users/includes/form.html' %}
+        {% endwith %}
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
