@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('posts', '0010_auto_20220707_2113'),
+        ('posts', '0010_add_UniqueConstraint_20220707'),
     ]
 
     operations = [

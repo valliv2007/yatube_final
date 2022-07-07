@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('posts', '0006_auto_20220628_2248'),
+        ('posts', '0006_add_image_field_20220628'),
     ]
 
     operations = [
