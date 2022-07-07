@@ -109,7 +109,7 @@ class PostURLTests(TestCase):
             'posts:add_comment', kwargs={'post_id': self.post.pk}))
 
         self.assertEqual(
-            response.status_code, 302,
+            response.status_code, HTTPStatus.FOUND,
             'неавторизованный пользователь имеет доступ к комментированию')
         self.assertRedirects(
             response,

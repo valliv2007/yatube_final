@@ -91,6 +91,7 @@ class PostPagesTests(TestCase):
         """Шаблон index сформирован с правильным контекстом."""
         response = self.guest_client.get(reverse(self.index))
         first_obj = response.context['page_obj'].object_list[0]
+
         self.assertEqual(first_obj, self.post,
                          'Ошибка вывода контекста поста в шаблон')
         self.assertEqual(first_obj.image, self.post.image,
@@ -194,10 +195,11 @@ class PostPagesTests(TestCase):
 
     def test_paginators(self):
         """Выводится правильное кол-во постов."""
-        for i in range(13):
+        amount_paginate_posts = 13
+        for number in range(amount_paginate_posts):
             self.post = Post.objects.create(
                 author=self.author,
-                text=(f'Тестовый пост {i} для тестирования'),
+                text=(f'Тестовый пост {number} для тестирования'),
                 group=self.group)
 
         responses = (self.guest_client.get(reverse(self.index)),
@@ -212,7 +214,7 @@ class PostPagesTests(TestCase):
             with self.subTest(response=response):
                 self.assertEqual(len(response.context['page_obj'].object_list),
                                  AMOUNT_POSTS,
-                                 'Ошибка вывода кол-во постов на странице')
+                                 'Ошибка вывода кол-ва постов на странице')
 
         responses = (self.guest_client.get(reverse(self.index) + '?page=2'),
                      self.guest_client.get(reverse(
@@ -233,33 +235,41 @@ class PostPagesTests(TestCase):
         cache.clear()
         cache_post = Post.objects.create(
             author=PostPagesTests.author,
-            text=' Пост для тестирования кэша',
+            text='Пост для тестирования кэша',
             group=PostPagesTests.group)
-        response_1 = self.guest_client.get(reverse(self.index))
-        content = response_1.content
 
-        self.assertEqual(content, response_1.content)
+        response_before_del_post = self.guest_client.get(reverse(self.index))
+        content = response_before_del_post.content
+
+        self.assertIn(cache_post.text.encode(), content,
+                      'Пост не выводится при запросе')
 
         cache_post.delete()
-        response_2 = self.guest_client.get(reverse(self.index))
+        response_after_del_post = self.guest_client.get(reverse(self.index))
 
-        self.assertEqual(content, response_2.content,
+        self.assertEqual(content, response_after_del_post.content,
                          'Ошибка кэширования постов')
 
         cache.clear()
-        response_3 = self.guest_client.get(reverse(self.index))
+        response_after_cache_clear = self.guest_client.get(reverse(self.index))
 
-        self.assertNotEqual(content, response_3.content,
+        self.assertNotEqual(content, response_after_cache_clear.content,
                             'Ошибка очистки кэша')
 
     def test_subscribe(self):
-        """можно подписываться на пользователей и удалять подписки."""
+        """авторизованный пользователь может подписываться на пользователей."""
         self.authorized_client.get(reverse(
             self.subscribe, kwargs={'username': 'auth'}))
 
         self.assertTrue(Follow.objects.filter(author=self.author,
                                               user=self.user).exists(),
                         'Ошибка создания новой подписки')
+
+    def test_unsubscribe(self):
+        """авторизованный пользователь может отписываться от пользователей."""
+        Follow.objects.create(
+            user=self.user,
+            author=self.author)
 
         self.authorized_client.get(reverse(
             self.unsubscribe, kwargs={'username': 'auth'}))

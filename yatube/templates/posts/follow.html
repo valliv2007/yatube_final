@@ -4,10 +4,10 @@
   Новые посты ваших любимых авторов
 {% endblock %}
 {% block content %}
-  {% include 'posts/includes/switcher.html' %}
+  {% include 'includes/switcher.html' %}
   <h1> Новые посты ваших любимых авторов </h1>
   {% for post in page_obj %}
-    {% include 'posts/includes/post.html' %}
+    {% include 'includes/post.html' %}
     {% if not forloop.last %}
       <hr>
     {% endif %}

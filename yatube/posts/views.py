@@ -1,6 +1,5 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_list_or_404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.cache import cache_page
 
@@ -34,8 +33,7 @@ def profile(request, username):
     counter = post_list.count()
     following = False
     if request.user.is_authenticated:
-        if request.user.follower.filter(author=author.id).exists():
-            following = True
+        following = request.user.follower.filter(author=author.id).exists()
     context = {'author': author,
                'page_obj': paginate_posts(request, post_list, AMOUNT_POSTS),
                'counter': counter,
@@ -97,16 +95,7 @@ def add_comment(request, post_id):
 
 @login_required
 def follow_index(request):
-    post_list = []
-    if request.user.follower.filter(user=request.user.id).exists():
-        authors = get_list_or_404(Follow, user=request.user.id)
-
-        for author in authors:
-            post_list.extend(author.author.posts.all())
-
-    def sort_posts(post):
-        return post.pub_date
-    post_list.sort(key=sort_posts, reverse=True)
+    post_list = Post.objects.filter(author__following__user=request.user.id)
     context = {'page_obj': paginate_posts(request, post_list, AMOUNT_POSTS)}
     return render(request, 'posts/follow.html', context)
 
@@ -126,7 +115,8 @@ def profile_follow(request, username):
 @login_required
 def profile_unfollow(request, username):
     author = get_object_or_404(User, username=username)
-    deleted_subscribe = Follow.objects.get(user=request.user,
-                                           author=author)
-    deleted_subscribe.delete()
+    deleted_subscribe = Follow.objects.filter(user=request.user.id,
+                                              author=author.id)
+    if deleted_subscribe.exists():
+        deleted_subscribe.delete()
     return redirect('posts:profile', username=username)

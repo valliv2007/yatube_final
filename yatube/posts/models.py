@@ -15,6 +15,10 @@ class Group(models.Model):
     def __str__(self):
         return self.title
 
+    class Meta:
+        verbose_name = "Group of post"
+        verbose_name_plural = "Groups of post"
+
 
 class Post(CreateModel):
     text = models.TextField(verbose_name="Текст поста",
@@ -36,7 +40,7 @@ class Post(CreateModel):
                               blank=True)
 
     class Meta:
-        ordering = ('-pub_date',)
+        ordering = ("-pub_date",)
         verbose_name = "Post"
         verbose_name_plural = "Posts"
 
@@ -58,6 +62,10 @@ class Comment(CreateModel):
     def __str__(self):
         return self.text
 
+    class Meta:
+        verbose_name = "Post comment"
+        verbose_name_plural = "Post comments"
+
 
 class Follow(models.Model):
     user = models.ForeignKey(User,
@@ -68,3 +76,12 @@ class Follow(models.Model):
                                related_name="following",
                                on_delete=models.CASCADE,
                                verbose_name="following")
+
+    def __str__(self):
+        return f'{self.user} subscribed {self.author}'
+
+    class Meta:
+        verbose_name = "Subscribe"
+        verbose_name_plural = "Subscribes"
+        constraints = [models.UniqueConstraint(fields=['user', 'author'],
+                       name='unique_subscribe')]
