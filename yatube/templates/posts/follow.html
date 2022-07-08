@@ -13,4 +13,7 @@
     {% endif %}
   {% endfor %}
   {% include 'includes/paginator.html' %}
+  {% if not page_obj %}
+    <h3> К сожалению, Вы еще не подписаны ни на одного нашего автора </h3>
+  {% endif %}
 {% endblock %}

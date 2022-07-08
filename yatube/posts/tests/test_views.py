@@ -255,6 +255,9 @@ class PostPagesTests(TestCase):
 
         self.assertNotEqual(content, response_after_cache_clear.content,
                             'Ошибка очистки кэша')
+        self.assertNotIn(cache_post.text.encode(),
+                         response_after_cache_clear.content,
+                         'Пост выводится при запросе посли очистки кэша')
 
     def test_subscribe(self):
         """авторизованный пользователь может подписываться на пользователей."""
