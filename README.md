@@ -14,7 +14,9 @@ pip install -r requirements.txt
 ``` 
 - В папке с файлом manage.py выполните команду:
 ```
-python3 manage.py runserver
+Для Windows: python manage.py runserver
+
+Для Linux и MacOS python manage.py runserver
 ```
 ## License
 Yandex and me)))
