@@ -118,6 +118,15 @@ class PostPagesTests(TestCase):
                          'Ошибка вывода контекста поста в шаблон')
         self.assertEqual(first_obj.image, self.post.image,
                          'Ошибка вывода изображения в шаблон')
+        following = response.context['following']
+        self.assertFalse(following)
+        Follow.objects.create(
+            user=self.user,
+            author=self.author)
+        response = self.authorized_client.get(reverse(
+            self.profile, kwargs={'username': 'auth'}))
+        following = response.context['following']
+        self.assertTrue(following)
 
     def test_post_detail_context(self):
         """Шаблон post_detail сформирован с правильным контекстом."""
